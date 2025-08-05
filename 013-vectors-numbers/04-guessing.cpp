@@ -34,9 +34,8 @@ void up_or_down(char &read_val, bool &go_up)
     }
 }
 
-void subdivide_vector(std::vector<int> &original_vector)
+std::vector<std::vector<int>> subdivide_vector(std::vector<int> &original_vector)
 {
-
     // Calculate the split point (e.g., in the middle)
     size_t mid_point = original_vector.size() / 2;
 
@@ -50,30 +49,57 @@ void subdivide_vector(std::vector<int> &original_vector)
     second_half.assign(original_vector.begin() + (mid_point - 1), original_vector.end());
 
     // Print the sub-vectors
-    std::cout << "First half: ";
-    for (int num : first_half)
-    {
-        std::cout << num << " ";
-    }
-    std::cout << std::endl; // Output: 1 2 3 4
+    // std::cout << "First half: ";
+    // for (int num : first_half)
+    // {
+    //     std::cout << num << " ";
+    // }
+    // std::cout << std::endl;
 
-    std::cout << "Second half: ";
-    for (int num : second_half)
-    {
-        std::cout << num << " ";
-    }
-    std::cout << std::endl; // Output: 5 6 7 8
+    // std::cout << "Second half: ";
+    // for (int num : second_half)
+    // {
+    //     std::cout << num << " ";
+    // }
+    // std::cout << std::endl;
+
+    return {first_half, second_half};
 }
 
-void perfom_computation(int &initial_number, int &lucky_number, bool &go_up, std::vector<int> &number_range)
+bool is_even(int num)
+{
+    return (num % 2 == 0);
+}
+
+void perfom_computation(bool &go_up, std::vector<int> &number_range, int &target_value)
 {
     if (go_up)
     {
-        subdivide_vector(number_range);
+        // std::cout << "it's in the upper 50%" << '\n';
+        std::vector<std::vector<int>> vector_parts = subdivide_vector(number_range);
+        std::vector<int> upper_half = vector_parts[1];
+
+        // save the new array and midpoint
+        number_range = upper_half;
+        upper_half[(upper_half.size() / 2)];
+        if (is_even(upper_half.size()))
+        {
+            target_value = upper_half[(upper_half.size() / 2)];
+        }
+        else
+        {
+            target_value = upper_half[(upper_half.size() / 2) - 1];
+        }
     }
     else
     {
-        std::cout << "it's in the lower 50%" << '\n';
+        // std::cout << "it's in the lower 50%" << '\n';
+        std::vector<std::vector<int>> vector_parts = subdivide_vector(number_range);
+        std::vector<int> lower_half = vector_parts[0];
+
+        // save the new array and midpoint
+        number_range = lower_half;
+        target_value = lower_half[(lower_half.size() / 2)];
     }
 }
 
@@ -81,8 +107,7 @@ int main()
 {
     std::vector<int> number_range;
     int MAX_QUESTIONS = 7;
-    int initial_value = 100;
-    int lucky_number = 100;
+    int target_value = 100;
     bool go_up = false;
     char read_val;
 
@@ -93,9 +118,17 @@ int main()
 
     std::cout << "This is a number guessing game (must be between 1 and 100). " << '\n';
 
-    while (true)
+    for (int i = 0; i < MAX_QUESTIONS; i++)
     {
-        std::cout << "Is the number you're thinking about " << divide_number(lucky_number) << " or more? y/n " << '\n';
+        if (i == 0)
+        {
+            std::cout << "Is the number you're thinking about " << divide_number(target_value) << " or more? y/n " << '\n';
+        }
+        else
+        {
+            std::cout << "Is the number you're thinking about " << target_value << " or more? y/n " << '\n';
+        }
+
         std::cin >> read_val;
 
         if (is_valid_input(read_val))
@@ -103,7 +136,7 @@ int main()
             // does it go up or down?
             up_or_down(read_val, go_up);
             // make some math shit based on that
-            perfom_computation(initial_value, lucky_number, go_up, number_range);
+            perfom_computation(go_up, number_range, target_value);
         }
         else
         {
